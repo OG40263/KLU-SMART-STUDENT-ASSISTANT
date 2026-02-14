@@ -1,0 +1,7 @@
+[theme]
+primaryColor = "#B91C2E"          # Official KLU Red
+backgroundColor = "#FFFFFF"       # Clean White
+secondaryBackgroundColor = "#F1F1F1" # Light Gray for sidebar
+textColor = "#1D1D1D"             # Professional Dark Gray
+font = "sans serif"
+baseRadius = "12px"               # Modern rounded corners
