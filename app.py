@@ -3,58 +3,56 @@ import google.generativeai as genai
 import requests
 from streamlit_lottie import st_lottie
 
-# --- 1. SETUP & BRAIN ---
-API_KEY = "AIzaSyDKFx3vTpyYvjBUldvnrFj6TIIMAGga4vc" 
+# --- 1. SECURE CONFIGURATION ---
+# Accessing the key from Streamlit Secrets for 100% security
+API_KEY = st.secrets["GEMINI_API_KEY"] 
 genai.configure(api_key=API_KEY)
-# Using 'gemini-1.5-flash' for the best stability on Free Tier
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- 2. CONFIG & STYLING ---
+# --- 2. AESTHETIC UI SETUP ---
 st.set_page_config(page_title="KLU Student Assistant", layout="wide", page_icon="🤖")
 
 def load_lottieurl(url):
     r = requests.get(url)
     return r.json() if r.status_code == 200 else None
 
-# Aesthetic robot animation
+# Anonymous Robot Animation
 lottie_ai = load_lottieurl("https://assets5.lottiefiles.com/packages/lf20_at6aymiz.json")
 
-# Custom CSS for that professional "KLU Red" feel
+# Modern CSS: Glassmorphism & Anonymous Footer
 st.markdown("""
     <style>
     .stApp { background-color: #f8f9fa; }
     [data-testid="stChatMessage"] {
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        background-color: white;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
-    /* Official KLU Red for the progress bar */
     .stProgress > div > div > div > div { background-color: #B91C2E; }
     footer {visibility: hidden;}
-    .footer-text {
-        text-align: center; color: #888; padding: 20px; font-size: 14px;
+    .custom-footer {
+        text-align: center; padding: 20px; color: #888; font-size: 13px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. SIDEBAR: KLU CALCULATOR ---
+# --- 3. SIDEBAR: ANONYMOUS CALCULATOR ---
 with st.sidebar:
     if lottie_ai:
-        st_lottie(lottie_ai, height=150, key="sidebar_bot")
+        st_lottie(lottie_ai, height=150, key="bot_anim")
     
-    st.title("📊 KLU Calculator")
-    st.info("Goal: 75%+")
+    st.title("📊 Attendance Calc")
+    st.caption("Official KLU LTPS Weighted Formula")
     
-    # Grid layout for inputs
-    col1, col2 = st.columns(2)
-    with col1:
+    c1, c2 = st.columns(2)
+    with c1:
         l = st.number_input("Lecture %", 0, 100, 80, key="L")
         t = st.number_input("Tutorial %", 0, 100, 80, key="T")
-    with col2:
+    with c2:
         p = st.number_input("Practical %", 0, 100, 80, key="P")
         s = st.number_input("Skilling %", 0, 100, 80, key="S")
     
-    # Official KLU Weighted Formula
     weighted = ((l * 100) + (t * 25) + (p * 50) + (s * 25)) / 200
     
     if weighted < 75:
@@ -65,8 +63,7 @@ with st.sidebar:
 # --- 4. MAIN INTERFACE ---
 st.title("🤖 KLU Smart Assistant")
 
-# Tabs for a clean UX
-tab1, tab2 = st.tabs(["💬 Assistant", "📈 Performance Tracker"])
+tab1, tab2 = st.tabs(["💬 AI Assistant", "📈 Attendance Tracker"])
 
 with tab1:
     if "messages" not in st.session_state:
@@ -76,36 +73,40 @@ with tab1:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if prompt := st.chat_input("Ask about KLU life..."):
+    if prompt := st.chat_input("Ask me about KLU..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
-            # Feeding your attendance context to the AI
-            full_context = f"Student Attendance: {weighted}%. Prompt: {prompt}"
+            # Anonymous context
+            full_context = f"Context: I am a KLU student. My current weighted attendance is {weighted}%. Prompt: {prompt}"
             try:
                 response = model.generate_content(full_context)
                 st.markdown(response.text)
                 st.session_state.messages.append({"role": "assistant", "content": response.text})
-            except Exception:
-                st.error("Wait 60 seconds... Quota limit reached.")
+            except:
+                st.error("AI is resting. Try again in 60s.")
 
 with tab2:
-    st.subheader("Attendance Health Overview")
+    st.subheader("Performance Dashboard")
     st.progress(weighted / 100)
     
     m1, m2, m3 = st.columns(3)
-    m1.metric("Overall", f"{weighted}%")
+    m1.metric("Current", f"{weighted}%")
     m2.metric("Target", "75%")
-    m3.metric("Margin", f"{round(weighted-75, 2)}%", delta_color="normal")
+    m3.metric("Margin", f"{round(weighted-75, 2)}%")
     
     st.write("---")
     st.markdown("### 💡 AI Recommendations")
     if weighted < 75:
-        st.warning("Prioritize your **Lecture** and **Practical** hours this week to reach 75%.")
+        st.warning("Prioritize Lecture and Practical components to boost your score above 75%.")
     else:
-        st.success("You are in the green zone! Maintaining this will keep you safe for end-exams.")
+        st.success("You are meeting the university requirements. Maintain this consistency.")
+
+# Anonymous Footer
+st.markdown("<div class='custom-footer'>Created by KLU Student Community | v2.0</div>", unsafe_allow_html=True)
+    
+   
 
 
-st.markdown("<div class='footer-text'>Developed by 40263 | KLU Assistant v2.0</div>", unsafe_allow_html=True)
