@@ -10,7 +10,7 @@ genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- 2. CONFIG & STYLING ---
-st.set_page_config(page_title="KLU Assistant", layout="wide", page_icon="🤖")
+st.set_page_config(page_title="KLU Student Assistant", layout="wide", page_icon="🤖")
 
 def load_lottieurl(url):
     r = requests.get(url)
@@ -106,5 +106,6 @@ with tab2:
         st.warning("Prioritize your **Lecture** and **Practical** hours this week to reach 75%.")
     else:
         st.success("You are in the green zone! Maintaining this will keep you safe for end-exams.")
+
 
 st.markdown("<div class='footer-text'>Developed by 40263 | KLU Assistant v2.0</div>", unsafe_allow_html=True)
